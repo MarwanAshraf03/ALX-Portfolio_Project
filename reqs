@@ -1,0 +1,42 @@
+infrastructure:
+  - backend:
+      - containerized backend, frontend, and database (using Docker)
+      - use Mosquitto MQTT for bid notifications and auction updates
+      - use WebSocket or other real-time communication protocols for updates
+      - utilize a load balancer for high availability and scalability
+      - ensure persistent data storage for auctions and bids in MongoDB
+      - implement secure and efficient message broker architecture for low-latency updates
+
+security:
+  - backend:
+      - ensure bid verification mechanisms to prevent tampering
+      - secure user and admin accounts (password hashing, MFA)
+      - implement access control and authorization (role-based permissions)
+      - protect sensitive user data (encryption at rest and in transit)
+
+admin:
+  - backend:
+      - create auctions
+      - add auction data (image-url, starting-price, start-date, end-date)
+      - manage users (ban/unban, assign roles)
+      - monitor system health (bid activity)
+      - manage notifications (set alerts for upcoming auctions, bidding activity)
+      - configure auction settings (auction duration, starting price, etc.)
+      - manage backup and disaster recovery plans
+
+user:
+  - backend:
+      - engage in an auction
+      - place bids in real-time
+      - view auction details (item, price, bid history)
+      - receive notifications on bid status, auction updates, outbid alerts
+      - have a secure account (authentication, profile management)
+
+system:
+  - backend:
+      - manage real-time auction and bid updates (via Mosquitto MQTT)
+      - store auction and bid data securely in MongoDB
+      - ensure platform security (authentication, authorization)
+      - provide disaster recovery and backup mechanisms for auction data
+      - handle message queueing (for bid updates, auction status, etc.)
+      - provide data integrity checks and audit trails for all transactions and admin activities
