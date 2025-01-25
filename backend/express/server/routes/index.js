@@ -1,16 +1,16 @@
 import express from "express";
-// import { AppController } from '../controllers/AppController';
+// import { AdminController } from '../controllers/AdminController';
 // import { StudentsController } from '../controllers/StudentsController';
-import AppController from "../controllers/admin.js";
+import AdminController from "../controllers/admin.js";
 import StudentsController from "../controllers/user.js";
 import Mosquitto from "../models/mosquitto.js";
 import redis_class from "../models/redis.js";
 import Mongo from "../models/mongo.js";
-// import { AppController } from "../controllers/admin";
+// import { AdminController } from "../controllers/admin";
 
 const router = express.Router();
 // Route for the homepage
-router.get("/", AppController.getHomepage);
+router.get("/", AdminController.getHomepage);
 
 // Route for the homepage
 router.get("/mos-conn/", Mosquitto.connect);

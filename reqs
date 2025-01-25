@@ -16,16 +16,18 @@ security:
 
 admin:
   - backend:
-      - create auctions
-      - add auction data (image-url, starting-price, start-date, end-date)
-      - manage users (ban/unban, assign roles)
+      - create auctions + add auction data (image-url, starting-price, start-date, end-date)
+      # - manage users (ban/unban, assign roles)
       - monitor system health (bid activity)
       - manage notifications (set alerts for upcoming auctions, bidding activity)
       - configure auction settings (auction duration, starting price, etc.)
-      - manage backup and disaster recovery plans
+      # - manage backup and disaster recovery plans
 
 user:
   - backend:
+      - sign up
+      - login
+      - change password
       - engage in an auction
       - place bids in real-time
       - view auction details (item, price, bid history)
