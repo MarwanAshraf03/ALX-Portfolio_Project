@@ -1,12 +1,13 @@
-import Mosquitto from "../models/mosquitto";
-import Mongo from "../models/mongo";
+import Mosquitto from "../models/mosquitto.js";
+import Mongo from "../models/mongo.js";
 export default class AdminController {
   static count = 0;
 
   static getAuctionActiviy(request, response) {
-    AdminController.count += 1; // Directly use the class name
-    console.log("hello from admin.js");
-    response.send(`This is the ${AdminController.count}th request\n`);
+    // AdminController.count += 1; // Directly use the class name
+    // console.log("hello from admin.js");
+    response.send("hello from admin.js");
+    // response.send(`This is the ${AdminController.count}th request\n`);
   }
   static createAuction(request, response) {
     // create auction in mongo and in mosquitto at the same time

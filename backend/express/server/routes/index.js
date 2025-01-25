@@ -10,7 +10,9 @@ import Mongo from "../models/mongo.js";
 
 const router = express.Router();
 // Route for the homepage
-router.get("/", AdminController.getHomepage);
+router.get("/", AdminController.getAuctionActiviy);
+
+router.post("/create_auction", AdminController.createAuction);
 
 // Route for the homepage
 router.get("/mos-conn/", Mosquitto.connect);

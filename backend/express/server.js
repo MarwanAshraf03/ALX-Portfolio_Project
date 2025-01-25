@@ -8,7 +8,9 @@ app.use(express.json());
 
 app.use("/", router);
 
-app.listen(port);
+app.listen(port, () => {
+  console.log("started");
+});
 
 export default app;
 

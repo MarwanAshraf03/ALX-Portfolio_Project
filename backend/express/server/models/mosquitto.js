@@ -17,14 +17,14 @@ export default class Mosquitto {
     return client;
   }
 
-  static get_auction_list(auction_name) {
-    client = Mosquitto.connect();
-    client.subscribe("auction_list", { qos: 1 });
-  }
-  static publish_at_auction_list(auction_name) {
-    client = Mosquitto.connect();
-    client.publish("auction_list", auction_name, { retain: true });
-  }
+  //   static get_auction_list(auction_name) {
+  //     client = Mosquitto.connect();
+  //     client.subscribe("auction_list");
+  //   }
+  //   static publish_at_auction_list(auction_name) {
+  //     client = Mosquitto.connect();
+  //     client.publish("auction_list", auction_name, { retain: true });
+  //   }
   static publish_auction(auction_name, start_price) {
     client = Mosquitto.connect();
     client.publish(auction_name, start_price);

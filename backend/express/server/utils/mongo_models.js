@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+// import { v4 as Schema.Types.UUID } from "uuid";
 
 const itemSchema = new Schema({
   name: String,
@@ -6,7 +7,7 @@ const itemSchema = new Schema({
 });
 
 const users = new Schema({
-  _id: ObjectId, // Unique user ID
+  _id: Schema.Types.UUID, // Unique user ID
   username: String, // Unique username
   email: String, // Unique email
   password: String, // Hashed password
@@ -23,17 +24,8 @@ const users = new Schema({
   updatedAt: Date,
 });
 
-const auction_list = new Schema({
-  auctions: [
-    {
-      name: String,
-      start_at: Date,
-      end_at: Date,
-    },
-  ],
-});
 const auctions = new Schema({
-  _id: ObjectId, // Unique auction ID
+  _id: Schema.Types.UUID, // Unique auction ID
   title: String,
   description: String,
   imageUrl: String, // URL to the auction item image
@@ -41,7 +33,7 @@ const auctions = new Schema({
   currentPrice: Number, // Updated dynamically
   startDate: Date,
   endDate: Date,
-  createdBy: ObjectId, // Reference to `Users._id`
+  createdBy: Schema.Types.UUID, // Reference to `Users._id`
   status: {
     type: String,
     enum: ["upcoming", "ongoing", "ended"],
@@ -50,7 +42,7 @@ const auctions = new Schema({
   bids: [
     // Embedded bid history
     {
-      bidder: ObjectId, // Reference to `Users._id`
+      bidder: Schema.Types.UUID, // Reference to `Users._id`
       amount: Number,
       placedAt: Date,
     },
@@ -60,25 +52,35 @@ const auctions = new Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
+const auction_list = new Schema({
+  auctions: [
+    {
+      name: String,
+      start_at: Date,
+      end_at: Date,
+    },
+  ],
+});
+
 const bids = new Schema({
-  _id: ObjectId, // Unique bid ID
-  auctionId: ObjectId, // Reference to `Auctions._id`
-  bidder: ObjectId, // Reference to `Users._id`
+  _id: Schema.Types.UUID, // Unique bid ID
+  auctionId: Schema.Types.UUID, // Reference to `Auctions._id`
+  bidder: Schema.Types.UUID, // Reference to `Users._id`
   amount: Number,
   placedAt: { type: Date, default: Date.now },
 });
 
 // const sessions = new Schema({
 //   _id: String, // Session ID
-//   userId: ObjectId, // Reference to `Users._id`
+//   userId: Schema.Types.UUID, // Reference to `Users._id`
 //   createdAt: { type: Date, default: Date.now },
 //   expiresAt: Date, // Expiry time for the session
 //   data: Object, // Additional session data, if needed
 // });
 
 // const notification = new Schema({
-//   _id: ObjectId, // notificationification ID
-//   userId: ObjectId, // Reference to `Users._id`
+//   _id: Schema.Types.UUID, // notificationification ID
+//   userId: Schema.Types.UUID, // Reference to `Users._id`
 //   type: {
 //     type: String,
 //     enum: ["bid_update", "auction_update", "system_alert"],

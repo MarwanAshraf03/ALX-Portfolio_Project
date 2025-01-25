@@ -9,12 +9,12 @@ import {
 
 export default class Mongo {
   // MongoDB connection URL (replace with your own if necessary)
-  //   static mongoURI = "mongodb://mongo:27017/mydatabase"; // when running containerized server
-  static mongoURI = "mongodb://localhost:27017/mydatabase"; // when running local server
+  //   static mongoURI = "mongodb://mongo:27017/AuctionEase"; // when running containerized server
+  static mongoURI = "mongodb://localhost:27017/AuctionEase"; // when running local server
   //   static id = uuidv4()
 
   // Connect to MongoDB
-  static async connect(request, response) {
+  static connect() {
     mongoose.connect(Mongo.mongoURI);
 
     // Event listeners for MongoDB connection
