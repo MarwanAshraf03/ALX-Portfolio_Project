@@ -1,21 +1,20 @@
 import { Schema, model } from "mongoose";
-// import { v4 as Schema.Types.UUID } from "uuid";
-
+import { v4 as uuidv4 } from "uuid"; // when run local server
+// import pkg from "uuid"; // when run containerized server
+// const { v4: uuidv4 } = pkg; // when run containerized server
+// uuid for admin: 1cb30c0f-630e-4079-8f97-f2eb93a89762
 const itemSchema = new Schema({
   name: String,
   price: Number,
 });
 
 const users = new Schema({
-  _id: Schema.Types.UUID, // Unique user ID
-  username: String, // Unique username
-  email: String, // Unique email
-  password: String, // Hashed password
-  phoneNumber: String, // phone number
+  _id: { type: String, default: () => uuidv4() },
+  username: String,
+  email: String,
+  password: String,
+  phoneNumber: String,
   role: { type: String, enum: ["admin", "user"], default: "user" },
-  //   isBanned: { type: Boolean, default: false },
-  //   mfaEnabled: { type: Boolean, default: false },
-  //   mfaSecret: String, // Optional, for MFA
   profile: {
     fullName: String,
     avatarUrl: String,
@@ -25,15 +24,15 @@ const users = new Schema({
 });
 
 const auctions = new Schema({
-  _id: Schema.Types.UUID, // Unique auction ID
+  _id: { type: String, default: () => uuidv4() },
   title: String,
   description: String,
-  imageUrl: String, // URL to the auction item image
+  imageUrl: String,
   startingPrice: Number,
-  currentPrice: Number, // Updated dynamically
+  currentPrice: Number,
   startDate: Date,
   endDate: Date,
-  createdBy: Schema.Types.UUID, // Reference to `Users._id`
+  createdBy: { type: String, default: () => uuidv4() },
   status: {
     type: String,
     enum: ["upcoming", "ongoing", "ended"],
@@ -42,7 +41,7 @@ const auctions = new Schema({
   bids: [
     // Embedded bid history
     {
-      bidder: Schema.Types.UUID, // Reference to `Users._id`
+      bidder: { type: String, default: () => uuidv4() },
       amount: Number,
       placedAt: Date,
     },
@@ -63,24 +62,24 @@ const auction_list = new Schema({
 });
 
 const bids = new Schema({
-  _id: Schema.Types.UUID, // Unique bid ID
-  auctionId: Schema.Types.UUID, // Reference to `Auctions._id`
-  bidder: Schema.Types.UUID, // Reference to `Users._id`
+  _id: { type: String, default: () => uuidv4() }, // Unique bid ID
+  auctionId: { type: String, default: () => uuidv4() }, // Reference to `Auctions._id`
+  bidder: { type: String, default: () => uuidv4() }, // Reference to `Users._id`
   amount: Number,
   placedAt: { type: Date, default: Date.now },
 });
 
 // const sessions = new Schema({
 //   _id: String, // Session ID
-//   userId: Schema.Types.UUID, // Reference to `Users._id`
+//   userId: {type:String, default: () => uuidv4()}, // Reference to `Users._id`
 //   createdAt: { type: Date, default: Date.now },
 //   expiresAt: Date, // Expiry time for the session
 //   data: Object, // Additional session data, if needed
 // });
 
 // const notification = new Schema({
-//   _id: Schema.Types.UUID, // notificationification ID
-//   userId: Schema.Types.UUID, // Reference to `Users._id`
+//   _id: {type:String, default: () => uuidv4()}, // notificationification ID
+//   userId: {type:String, default: () => uuidv4()}, // Reference to `Users._id`
 //   type: {
 //     type: String,
 //     enum: ["bid_update", "auction_update", "system_alert"],
@@ -95,5 +94,3 @@ export const users_model = model("users", users);
 export const auctions_model = model("auctions", auctions);
 export const auction_list_model = model("auction_list", auction_list);
 export const bids_model = model("bids", bids);
-// export const sessions_model = model("sessions", sessions);
-// export const notification_model = model("notification", notification);

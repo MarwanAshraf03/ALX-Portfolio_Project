@@ -9,24 +9,19 @@ import Mongo from "../models/mongo.js";
 // import { AdminController } from "../controllers/admin";
 
 const router = express.Router();
-// Route for the homepage
 router.get("/", AdminController.getAuctionActiviy);
 
 router.post("/create_auction", AdminController.createAuction);
+router.get("/auction_list", AdminController.get_all_auction);
 
-// Route for the homepage
 router.get("/mos-conn/", Mosquitto.connect);
 
-// Route for the homepage
 router.get("/red-conn/", redis_class.conn);
 
-// Route for the homepage
 router.post("/mongo-conn/", Mongo.connect);
 
-// Route for all students
 router.get("/students", StudentsController.getAllStudents);
 
-// Route for students by major
 router.get("/students/:major", StudentsController.getAllStudentsByMajor);
 
 export default router;
