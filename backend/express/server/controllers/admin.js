@@ -14,23 +14,20 @@ export default class AdminController {
     );
   }
   static async createAuction(request, response) {
-    // create auction in mongo and in mosquitto at the same time
-    // create a topic in mosquitto with the auction name and its starting price
-    // validate auction data
-    // add auction to mongo db
-    // const { auction_name, starting_price } = request.body;
-    // Mosquitto.publish_auction(auction_name, starting_price);
+    const { title, startingPrice } = request.body;
+    Mosquitto.publish_auction(title, startingPrice);
+    console.log(title, startingPrice);
     const ret = await Mongo.save_auction(request.body);
     response.send(ret);
-    // AdminController.count += 1; // Directly use the class name
-    // console.log("hello from admin.js");
-    // response.send(`This is the ${AdminController.count}th request\n`);
   }
+
   static async get_all_auction(request, response) {
     response.send(await Mongo.auction_list());
   }
   static config_auction(request, response) {
     response.send("hello world");
   }
-  //   static getAuctionActiviy() {}
+  static async list_users(request, response) {
+    response.send({ message: "list of users", list: await Mongo.users_list() });
+  }
 }

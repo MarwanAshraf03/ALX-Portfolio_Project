@@ -20,7 +20,7 @@ const users = new Schema({
     avatarUrl: String,
   },
   createdAt: { type: Date, default: Date.now },
-  updatedAt: Date,
+  updatedAt: { type: Date, default: Date.now },
 });
 
 const auctions = new Schema({
