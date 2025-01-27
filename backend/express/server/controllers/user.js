@@ -49,4 +49,71 @@ export default class UserController {
 
     res.status(200).json({ sessionId, message: "Login successful!" });
   }
+  static async bid(req, res) {
+    const { auctionId, bidder, amount } = req.body;
+
+    if (!auctionId || !bidder || !amount) {
+      return res.status(400).json({
+        message: "All fields (auctionId, bidder, amount) are required.",
+      });
+    }
+
+    try {
+      Mongo.save_bid(req.body);
+      mqttClient.publish(Mongo.get_auction(auctionId), String(amount));
+
+      // Respond with the bid data
+      res.status(201).json({
+        message: "Bid placed successfully!",
+      });
+    } catch (error) {
+      console.error("Error creating bid:", error);
+      res.status(500).json({ message: "Error placing bid." });
+    }
+  }
+
+  static async listen_on_auction(req, res) {
+    const { auctionId, userId } = req.params;
+
+    if (!auctionId || !userId) {
+      return res
+        .status(400)
+        .json({ message: "Auction ID and User ID are required." });
+    }
+
+    try {
+      mqttClient.on("connect", () => {
+        console.log(`User ${userId} is subscribing to auction ${auctionId}`);
+        mqttClient.subscribe(Mongo.get_auction(auctionId), (err) => {
+          if (err) {
+            console.error("Failed to subscribe to auction bids:", err);
+            return res
+              .status(500)
+              .json({ message: "Failed to subscribe to auction bids." });
+          }
+          console.log(`User ${userId} subscribed to auction ${auctionId}/bids`);
+          return res.status(200).json({
+            message: `Subscribed to auction ${Mongo.get_auction(
+              auctionId
+            )} bid updates.`,
+          });
+        });
+      });
+      mqttClient.on("message", (topic, message) => {
+        if (topic === `auction/${auctionId}/bids`) {
+          const bidData = JSON.parse(message.toString());
+          console.log(`New bid update for auction ${auctionId}:`, bidData);
+          redisClient.set(
+            `auction:${auctionId}:latestBid`,
+            JSON.stringify(bidData)
+          );
+        }
+      });
+    } catch (error) {
+      console.error("Error subscribing to auction:", error);
+      return res
+        .status(500)
+        .json({ message: "Error subscribing to auction updates." });
+    }
+  }
 }

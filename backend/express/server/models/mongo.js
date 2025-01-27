@@ -93,7 +93,18 @@ export default class Mongo {
     const list = await auction_list_model.find();
     return { message: "list of auctions", list: list };
   }
-  static async save_bid() {
+  static async save_bid(body) {
+    const { auctionId, bidder, amount } = body;
+    // Create a new bid document
+    const newBid = new bids_model({
+      auctionId,
+      bidder,
+      amount,
+    });
+
+    // Save bid to MongoDB
+    await newBid.save();
+
     const { name, price } = request.body;
     const newItem = new Item({ name, price });
     await newItem.save();
@@ -105,5 +116,8 @@ export default class Mongo {
     const user = users_model.findOne({ email });
     if (!user) return false;
     return bcrypt.compareSync(password, user.password);
+  }
+  static async get_auction(auctionId) {
+    return await auctions_model.findById(auctionId).title;
   }
 }
