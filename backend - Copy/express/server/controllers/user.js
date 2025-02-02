@@ -1,7 +1,6 @@
 import Mongo from "../models/mongo.js";
 import validator from "validator";
 import { v4 as uuidv4 } from "uuid"; // when run local server
-import redis_class from "../models/redis.js";
 // import pkg from "uuid"; // when run containerized server
 // const { v4: uuidv4 } = pkg; // when run containerized server
 
@@ -46,8 +45,7 @@ export default class UserController {
       return res.status(404).send("User not found! or Invalid Password!");
     }
     const sessionId = uuidv4();
-    redis_class.conn();
-    await redis_class.client.set(`session:${sessionId}`, email, { EX: 3600 }); // Session expires in 1 hour
+    await redisClient.set(`session:${sessionId}`, email, { EX: 3600 }); // Session expires in 1 hour
 
     res.status(200).json({ sessionId, message: "Login successful!" });
   }
@@ -105,8 +103,7 @@ export default class UserController {
         if (topic === `auction/${auctionId}/bids`) {
           const bidData = JSON.parse(message.toString());
           console.log(`New bid update for auction ${auctionId}:`, bidData);
-          redis_class.conn();
-          redis_class.client.set(
+          redisClient.set(
             `auction:${auctionId}:latestBid`,
             JSON.stringify(bidData)
           );

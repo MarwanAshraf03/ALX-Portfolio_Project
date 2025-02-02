@@ -19,7 +19,7 @@ admin:
       - create auctions + add auction data (image-url, starting-price, start-date, end-date)
       # - manage users (ban/unban, assign roles)
       - monitor system health (bid activity)
-      - manage notifications (set alerts for upcoming auctions, bidding activity)
+      # - manage notifications (set alerts for upcoming auctions, bidding activity)
       - configure auction settings (auction duration, starting price, etc.)
       # - manage backup and disaster recovery plans
 

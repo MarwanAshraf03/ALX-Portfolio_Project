@@ -6,24 +6,13 @@ import { v4 as uuidv4 } from "uuid"; // when run local server
 export default class AdminController {
   static count = 0;
 
-  static async getAuctionActiviy(request, response) {
-    try {
-      const auctions = await Mongo.auction_list();
-      const activity = auctions.map((auction) => ({
-        title: auction.title,
-        startDate: auction.startDate,
-        endDate: auction.endDate,
-        status: auction.status,
-      }));
-      response.status(200).json({ activity });
-    } catch (error) {
-      console.error("Error fetching auction activity:", error);
-      response
-        .status(500)
-        .json({ message: "Failed to fetch auction activity." });
-    }
+  static getAuctionActiviy(request, response) {
+    response.send(
+      `${new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)}\n${
+        Date.now() + 7 * 24 * 60 * 60 * 1000
+      }\n${Date.now() + 14 * 24 * 60 * 60 * 1000}\n`
+    );
   }
-
   static async createAuction(request, response) {
     const { title, startingPrice } = request.body;
     Mosquitto.publish_auction(title, startingPrice);

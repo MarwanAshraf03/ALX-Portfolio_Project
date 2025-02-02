@@ -11,8 +11,5 @@ router.get("/users_list", AdminController.list_users);
 
 // User routes
 router.post("/sign_in", UserController.sign_in);
-router.get("/log_in", UserController.loginUser);
-router.post("/bid", UserController.bid);
-router.get("/listen_on_auction", UserController.listen_on_auction);
 
 export default router;
