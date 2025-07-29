@@ -41,14 +41,16 @@ export default class UserController {
   }
   static async loginUser(req, res) {
     const { email, password } = req.body;
-    const isValid = Mongo.validate(email, password);
-    if (!isValid) {
+    const user_id = await Mongo.validate(email, password);
+    if (!user_id) {
       return res.status(404).send("User not found! or Invalid Password!");
     }
     const sessionId = uuidv4();
-    redis_class.conn();
-    await redis_class.client.set(`session:${sessionId}`, email, { EX: 3600 }); // Session expires in 1 hour
-
+    try {
+      await redis_class.create_session(sessionId, user_id);
+    } catch (error) {
+      console.log(error);
+    }
     res.status(200).json({ sessionId, message: "Login successful!" });
   }
   static async bid(req, res) {

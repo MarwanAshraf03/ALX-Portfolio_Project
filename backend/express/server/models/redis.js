@@ -19,12 +19,10 @@ export default class redis_class {
       console.error("Error connecting to Redis:", error);
     }
   }
+  static async create_session(sessionId, email) {
+    await redis_class.conn();
+    await redis_class.client.set(`session:${sessionId}`, email, { EX: 10 }); // Session expires in 1 hour
+    await redis_class.client.disconnect();
+    console.log("Redis Disconnected");
+  }
 }
-// Basic route
-// const value = (await redis_class.client.get("counter")) || 0;
-// console.log(`Counter value: ${value}`);
-
-// // Reset counter
-// await redis_class.client.set("counter", redis_class.counter++);
-// await redis_class.client.disconnect();
-// response.send(`Counter reset to ${redis_class.counter}`);

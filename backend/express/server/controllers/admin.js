@@ -7,6 +7,7 @@ export default class AdminController {
   static count = 0;
 
   static async getAuctionActiviy(request, response) {
+    // response.json({ message: "hello world" });
     try {
       const auctions = await Mongo.auction_list();
       const activity = auctions.map((auction) => ({

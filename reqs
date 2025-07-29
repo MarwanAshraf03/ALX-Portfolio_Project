@@ -42,3 +42,34 @@ system:
       - provide disaster recovery and backup mechanisms for auction data
       - handle message queueing (for bid updates, auction status, etc.)
       - provide data integrity checks and audit trails for all transactions and admin activities
+
+what should system do when admin creates an auction?:
+  - create a new auction in the database with the specified details
+    ( Mongo DB )
+  - list in the redis cache with auctions that are currently active
+  - create a key having the auction name + its ID in redis with
+    expiration time as the auction end time the value is the last bid
+    or the starting price
+  - create a new topic in Mosquitto MQTT for the new auction
+  - if user is new to the auction get the latest bid from the redis
+    cache and send it to the user
+  - if user is already in the auction get bids from MQTT
+  - notify users ( that are interested in new auctions ) of the new
+    auction (via WebSocket or other real-time communication protocol)
+    notify users of the auction start time and end time ( via WebSocket )
+
+what should system do when user places a bid?:
+  - check if the bid is valid (greater than the last bid)
+  - create a new bid in the database with the user ID, auction ID,
+    and bid amount ( Mongo DB )
+  - update the last bid in the redis cache ( redis )
+  - publish the bid to the Mosquitto MQTT topic ( MQTT )
+
+what should system do when auction ends?:
+  - remove the auction from the active auctions list in redis
+  - remove the key from redis
+  - close the Mosquitto MQTT topic
+  - notify the winner of the auction (via WebSocket or other real-time communication protocol)
+  - notify all users of the auction result (via WebSocket or other real-time communication protocol)
+  - add the last bid to the auction history in the database ( Mongo DB )
+  - update the auction status in the database to Done! ( Mongo DB )
