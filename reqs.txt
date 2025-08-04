@@ -1,0 +1,51 @@
+auction-details:
+  - auction-name: string
+  - starting-price: number
+  - start-date: date-time (optional) (now or future)
+  - end-date: date-time (validate)
+  - image-url: string (optional)
+
+admin (auction owner):
+    creates auctions
+        adds auction and its details in mongodb (done)
+        adds a primary first bid in the redis cache with the starting price (done)
+        start a topic with auction's name (deprecated)
+        in redis, make it remove the key of the auction automatically via expiration date (done)
+        
+    updates auctions
+        updates are for ("endDate", "imageUrl", "description") only (done)
+        updates are set in the auctions, and auction_lists collections (done)
+        in case of UI the changes will not be instant except for endDate (far away)
+
+    ends auctions (done)
+    
+    listing:
+        auctions: based on status or all (done)
+        auction activty: bids of specific auction (still)
+
+bid:
+
+user:
+    sign_in (done)
+    log_in (done)
+    log_out (done)
+    places bid
+        with: _id, auctionId, bidder, amount, placedAt (still)
+
+    Browse Auctions:
+        View list of current, upcoming, and ended auctions (still)
+
+    Place Bids:
+        Submit a bid (must be higher than the current price + increment) (still)
+
+    User Profile:
+        View their own bid history and winning auctions (still)
+
+    Receive Notifications:
+        Get notified when they win, get outbid, or an auction starts (via MQTT, email, or UI) (still)
+
+    Track Active Bids:
+        (still)
+
+    View Auction Details:
+        See title, description, images, start/end time, current price, and bid history (optional) (still)

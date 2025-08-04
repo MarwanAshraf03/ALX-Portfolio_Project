@@ -5,6 +5,11 @@ import redis_class from "../models/redis.js";
 // import pkg from "uuid"; // when run containerized server
 // const { v4: uuidv4 } = pkg; // when run containerized server
 
+// TODO: make the backend use cookies where the sessionId will be saved
+// to identify users
+// sessionId will not be sent in authorization header in production
+// instead it will be accessed via cookies
+
 export default class UserController {
   static async sign_in(req, res) {
     try {
@@ -39,8 +44,10 @@ export default class UserController {
       res.status(500).json({ error: "Internal server error" });
     }
   }
-  static async loginUser(req, res) {
+
+  static async log_in(req, res) {
     const { email, password } = req.body;
+    console.log(req.body);
     const user_id = await Mongo.validate(email, password);
     if (!user_id) {
       return res.status(404).send("User not found! or Invalid Password!");
@@ -51,8 +58,47 @@ export default class UserController {
     } catch (error) {
       console.log(error);
     }
-    res.status(200).json({ sessionId, message: "Login successful!" });
+    res.cookie("sessionId", `session:${sessionId}`, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Use secure cookies in production
+      sameSite: "strict", // Prevent CSRF attacks
+    });
+    res
+      .status(200)
+      .json({ sessionId: sessionId, message: "Login successful!" });
   }
+
+  static get_sessionId(req) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return {
+        status: 401,
+        json: { message: "Authorization header is missing or invalid." },
+      };
+    }
+
+    const sessionId = authHeader.split(" ")[1];
+    return { status: 200, json: { sessionId: [sessionId] } };
+  }
+
+  static async log_out(req, res) {
+    // const sessionId = req.params.sessionId;
+    const auth = UserController.get_sessionId(req);
+    if (auth.status !== 200) {
+      return res.status(auth.status).json(auth.json);
+    }
+    const sessionId = auth.json.sessionId[0];
+    if (!sessionId) {
+      return res.status(400).json({ message: "Session ID is required." });
+    }
+    // try {
+    const status = await redis_class.delete_session(`session:${sessionId}`);
+    if (!status) {
+      return res.status(404).json({ message: "Session not found." });
+    }
+    res.status(200).json({ message: "Logged out successfully." });
+  }
+
   static async bid(req, res) {
     const { auctionId, bidder, amount } = req.body;
 

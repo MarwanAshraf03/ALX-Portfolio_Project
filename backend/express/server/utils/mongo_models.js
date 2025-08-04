@@ -30,7 +30,7 @@ const auctions = new Schema({
   imageUrl: String,
   startingPrice: Number,
   currentPrice: Number,
-  startDate: Date,
+  startDate: { type: Date, default: Date.now },
   endDate: Date,
   createdBy: { type: String, default: () => uuidv4() },
   status: {
@@ -38,35 +38,36 @@ const auctions = new Schema({
     enum: ["upcoming", "ongoing", "ended"],
     default: "upcoming",
   },
-  bids: [
-    // Embedded bid history
-    {
-      bidder: { type: String, default: () => uuidv4() },
-      amount: Number,
-      placedAt: Date,
-    },
-  ],
   bidIncrement: Number,
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
 
-const auction_list = new Schema({
-  auctions: [
-    {
-      name: String,
-      start_at: Date,
-      end_at: Date,
-    },
-  ],
-});
-
 const bids = new Schema({
   _id: { type: String, default: () => uuidv4() }, // Unique bid ID
-  auctionId: { type: String, default: () => uuidv4() }, // Reference to `Auctions._id`
-  bidder: { type: String, default: () => uuidv4() }, // Reference to `Users._id`
+  // auctionId: { type: String, default: () => uuidv4() }, // Reference to `Auctions._id`
+  // bidder: { type: String, default: () => uuidv4() }, // Reference to `Users._id`
+  auctionId: { type: String }, // Reference to `Auctions._id`
+  bidder: { type: String }, // Reference to `Users._id`
   amount: Number,
   placedAt: { type: Date, default: Date.now },
+});
+
+const auction_list = new Schema({
+  // auctions: [
+  // {
+  _id: { type: String, default: () => uuidv4() },
+
+  title: String,
+  startDate: Date,
+  endDate: Date,
+  status: {
+    type: String,
+    enum: ["upcoming", "ongoing", "ended"],
+    default: "upcoming",
+  },
+  // },
+  // ],
 });
 
 // const sessions = new Schema({

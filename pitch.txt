@@ -1,5 +1,5 @@
 AuctionEase: Revolutionizing Online Auctions with Real-Time Bidding
-Overview:AuctionEase is an innovative online auction platform designed to provide a seamless, close to real-time bidding experience. Built on a Docker-based architecture and powered by Mosquitto MQTT, AuctionEase ensures high performance, scalability, and minimal latency, making it the ideal solution for single-admin, self-managed auction sites.
+Overview: AuctionEase is an innovative online auction platform designed to provide a seamless, close to real-time bidding experience. Built on a Docker-based architecture and powered by Mosquitto MQTT, AuctionEase ensures high performance, scalability, and minimal latency, making it the ideal solution for single-admin, self-managed auction sites.
 Key Features:
 Real-Time Bidding – Utilizing Mosquitto MQTT, AuctionEase delivers instant bid updates without the need for constant page refreshes or polling. Bidders stay engaged with the latest auction status.
 Simple Admin Management – One admin manages all auctions, simplifying the backend while maintaining full control over listings, auction timing, and bid monitoring.
@@ -20,5 +20,4 @@ Business Value:
 Cost-Effective – Minimal server costs due to lightweight Mosquitto MQTT and Docker.
 Engaging User Experience – Real-time bid feedback keeps users involved, leading to higher engagement and bidding activity.
 Customization – Tailor the platform to fit the admin’s specific needs without the complexity of multi-user systems.
-Conclusion:AuctionEase offers a cutting-edge solution for self-managed auctions, combining the simplicity of single-admin operations with the power of real-time bid updates. Whether you're an independent seller or a small business, AuctionEase provides the tools needed to run successful, scalable auctions with ease and efficiency.
-
+Conclusion: AuctionEase offers a cutting-edge solution for self-managed auctions, combining the simplicity of single-admin operations with the power of real-time bid updates. Whether you're an independent seller or a small business, AuctionEase provides the tools needed to run successful, scalable auctions with ease and efficiency.

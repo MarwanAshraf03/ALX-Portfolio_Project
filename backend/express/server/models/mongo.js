@@ -10,6 +10,7 @@ import {
   auction_list_model,
   bids_model,
 } from "../utils/mongo_models.js";
+import redis_class from "./redis.js";
 export default class Mongo {
   //   static mongoURI = "mongodb://mongo:27017/AuctionEase"; // when running containerized server
   static mongoURI = "mongodb://localhost:27017/AuctionEase"; // when running local server
@@ -19,6 +20,145 @@ export default class Mongo {
     db.on("error", (err) => console.error("MongoDB connection error:", err));
     db.once("open", () => console.log("Connected to MongoDB"));
   }
+
+  static async save_auction(body) {
+    const {
+      title,
+      description = "null",
+      imageUrl = "null",
+      startingPrice,
+      startDate,
+      endDate,
+      createdBy = "854cc558-d014-4bb1-958a-e28377329f5e",
+      status,
+      bidIncrement,
+    } = body;
+    Mongo.connect();
+    console.log("line 87");
+    const newItem = new auctions_model({
+      _id: title + "@" + createdBy,
+      title: title,
+      description: description,
+      imageUrl: imageUrl,
+      startingPrice: startingPrice,
+      startDate: startDate,
+      endDate: endDate,
+      createdBy: createdBy,
+      status: status,
+      bidIncrement: bidIncrement,
+    });
+    console.log("line 101");
+    const newItem_list = new auction_list_model({
+      // auctions: [
+      //   {
+      //     name: title,
+      //     start_at: startDate,
+      //     end_at: endDate,
+      //   },
+      // ],
+      _id: title + "@" + createdBy,
+
+      title: title,
+      startDate: startDate,
+      endDate: endDate,
+      status: status,
+    });
+    // check if the auction already exists
+    const existingAuction = await auctions_model.findOne({
+      _id: newItem._id,
+    });
+
+    if (existingAuction) {
+      console.log("Auction already exists");
+      return { message: "Auction already exists" };
+    }
+
+    const bid = new bids_model({
+      _id: uuidv4(), // Unique bid ID
+      auctionId: title + "@" + createdBy,
+      bidder: createdBy,
+      amount: startingPrice,
+      placedAt: startDate,
+    });
+
+    await redis_class.bid_on_auction(bid, endDate);
+    await newItem.save();
+    await newItem_list.save();
+    console.log("line 113");
+    return { message: "Item added successfully", item: newItem };
+  }
+
+  static async update_auction(body) {
+    Mongo.connect();
+    const {
+      title,
+      description,
+      imageUrl,
+      startingPrice,
+      startDate,
+      endDate,
+      createdBy = "854cc558-d014-4bb1-958a-e28377329f5e",
+      status,
+      bidIncrement,
+    } = body;
+    const updatedItem = await auctions_model.findOneAndUpdate(
+      { _id: title + "@" + createdBy },
+      {
+        description: description,
+        imageUrl: imageUrl,
+        startingPrice: startingPrice,
+        startDate: startDate,
+        endDate: endDate,
+        createdBy: createdBy,
+        status: status,
+        bidIncrement: bidIncrement,
+      },
+      { new: true }
+    );
+    await auction_list_model.findOneAndUpdate(
+      { _id: title + "@" + createdBy },
+      {
+        startDate: startDate,
+        endDate: endDate,
+        status: status,
+      },
+      { new: true }
+    );
+    await redis_class.set_expiry(title + "@" + createdBy, endDate);
+    return updatedItem;
+  }
+  static async get_auction(auctionId) {
+    return await auctions_model.findById(auctionId).title;
+  }
+
+  static async get_auction(title, createdBy) {
+    Mongo.connect();
+    const auction = await auctions_model.findOne({
+      _id: title + "@" + createdBy,
+    });
+    return auction;
+  }
+
+  static async auction_list_mongo(status = null) {
+    try {
+      Mongo.connect();
+      if (status) {
+        const list = await auction_list_model.find({ status: status });
+        return list;
+      } else {
+        const list = await auction_list_model.find();
+        return list;
+      }
+      // const list = await auctions_model.find();
+      // const list = await auctions_model.find();
+      // return { message: "list of auctions", list: list };
+      // return list;
+    } catch (error) {
+      console.error("Error fetching auction list:", error);
+      throw new Error("Failed to fetch auction list");
+    }
+  }
+
   static async save_user(body) {
     await Mongo.connect();
     const { email, password, username, profile, phoneNumber, fullName } = body;
@@ -40,94 +180,41 @@ export default class Mongo {
     await newUser.save();
     return newUser;
   }
-  static async users_list() {
-    // Mongo.connect()
-    await mongoose.connect(Mongo.mongoURI);
-    const u_list = await users_model.find();
-    console.log(u_list);
-    return u_list;
-  }
-  static async save_auction(body) {
-    const {
-      title,
-      description = "null",
-      imageUrl = "null",
-      startingPrice,
-      currentPrice,
-      startDate,
-      endDate,
-      createdBy,
-      status,
-      bidIncrement,
-    } = body;
-    Mongo.connect();
-    console.log("line 87");
-    const newItem = new auctions_model({
-      _id: uuidv4(),
-      title: title,
-      description: description,
-      imageUrl: imageUrl,
-      startingPrice: startingPrice,
-      currentPrice: currentPrice,
-      startDate: startDate,
-      endDate: endDate,
-      createdBy: createdBy,
-      status: status,
-      bidIncrement: bidIncrement,
-    });
-    console.log("line 101");
-    const newItem_list = new auction_list_model({
-      auctions: [
-        {
-          name: title,
-          start_at: startDate,
-          end_at: endDate,
-        },
-      ],
-    });
-    await newItem.save();
-    await newItem_list.save();
-    console.log("line 113");
-    return { message: "Item added successfully", item: newItem };
-  }
-  static async auction_list() {
-    try {
-      const list = await auction_list_model.find();
-      // return { message: "list of auctions", list: list };
-      return list;
-    } catch (error) {
-      console.error("Error fetching auction list:", error);
-      throw new Error("Failed to fetch auction list");
-    }
-  }
-  static async save_bid(body) {
-    const { auctionId, bidder, amount } = body;
-    // Create a new bid document
-    const newBid = new bids_model({
-      auctionId,
-      bidder,
-      amount,
-    });
 
-    // Save bid to MongoDB
-    await newBid.save();
+  // static async users_list() {
+  //   // Mongo.connect()
+  //   await mongoose.connect(Mongo.mongoURI);
+  //   const u_list = await users_model.find();
+  //   console.log(u_list);
+  //   return u_list;
+  // }
 
-    const { name, price } = request.body;
-    const newItem = new Item({ name, price });
-    await newItem.save();
-    console.log({ message: "Item added successfully", item: newItem });
-    const items = await Item.find();
-    response.send(items);
-  }
+  // static async save_bid(body) {
+  //   const { auctionId, bidder, amount } = body;
+  //   // Create a new bid document
+  //   const newBid = new bids_model({
+  //     auctionId,
+  //     bidder,
+  //     amount,
+  //   });
+
+  //   // Save bid to MongoDB
+  //   await newBid.save();
+
+  //   const { name, price } = request.body;
+  //   const newItem = new Item({ name, price });
+  //   await newItem.save();
+  //   console.log({ message: "Item added successfully", item: newItem });
+  //   const items = await Item.find();
+  //   response.send(items);
+  // }
+
   static async validate(email, password) {
     Mongo.connect();
     const user = await users_model.findOne({ email });
     if (!user) return false;
     if (bcrypt.compareSync(password, user.password)) return user._id;
     else return false;
-  }
-  static async get_auction(auctionId) {
-    return await auctions_model.findById(auctionId).title;
   }
 }
 
