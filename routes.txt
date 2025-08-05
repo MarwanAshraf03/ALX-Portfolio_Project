@@ -1,0 +1,67 @@
+// Admin routes
+1- post /create_auction
+    description: creates an auction with the required arguments
+    body:
+        required:
+            title
+            startingPrice
+            endDate
+            bidIncrement
+        not required:
+            startDate
+            imageUrl
+            description
+            createdBy
+            status
+
+2- post /update_auction
+    description: updates auction with the not required arguments
+    body:
+        requried:
+            createdBy
+            title
+        not required:
+            endDate
+            imageUrl
+            description
+
+3- get /auction_list
+    description: gets list of auctions, if status is provided it returns auctions with status provided,
+otherwise, returns all auctions
+    body:
+        not required:
+            status
+
+// User routes
+5- post /sign_in
+    description: creates a user that can bid
+    body:
+        requried:
+            username
+            email
+            password
+            phoneNumber
+            firstName
+            lastName
+        not required:
+            avatarUrl
+
+6- post /log_in
+    description: creates a session of the user
+    body:
+        requried:
+            email
+            password
+
+7- post /log_out
+    description: deletes session of user
+    authorization:
+        bearer token: uuid4 indicating sessionId
+
+8- post /bid
+    description: places a bid with user's id
+    body:
+        required:
+            auctionId
+    authorization:
+        bearer token: uuid4 indicating sessionId

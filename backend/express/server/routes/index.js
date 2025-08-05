@@ -10,7 +10,7 @@ router.post("/update_auction", AdminController.update_auction);
 router.get("/auction_list", AdminController.auction_list);
 // still
 router.get("/", AdminController.get_auction_activity);
-router.get("/users_list", AdminController.list_users);
+// router.get("/users_list", AdminController.list_users);
 
 // User routes
 // done
@@ -19,6 +19,6 @@ router.post("/log_in", UserController.log_in);
 router.post("/log_out", UserController.log_out);
 // still
 router.post("/bid", UserController.bid);
-router.get("/listen_on_auction", UserController.listen_on_auction);
+// router.get("/listen_on_auction", UserController.listen_on_auction);
 
 export default router;

@@ -5,6 +5,8 @@ auction-details:
   - end-date: date-time (validate)
   - image-url: string (optional)
 
+restrict access to different routes via roles (still)
+
 admin (auction owner):
     creates auctions
         adds auction and its details in mongodb (done)
@@ -27,15 +29,16 @@ bid:
 
 user:
     sign_in (done)
+
     log_in (done)
+    
     log_out (done)
-    places bid
-        with: _id, auctionId, bidder, amount, placedAt (still)
 
     Browse Auctions:
-        View list of current, upcoming, and ended auctions (still)
+        View list of current, upcoming, and ended auctions (done)
 
     Place Bids:
+        with: _id, auctionId, bidder, amount, placedAt (done)
         Submit a bid (must be higher than the current price + increment) (still)
 
     User Profile:

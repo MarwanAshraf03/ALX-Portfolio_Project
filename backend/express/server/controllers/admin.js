@@ -50,14 +50,6 @@ export default class AdminController {
         .send(`Missing required parameters: ${missingParams.join(", ")}`);
     }
 
-    // for (const param of required_params) {
-    //   if (!request.body[param]) {
-    //     return response
-    //       .status(400)
-    //       .send(`Missing required parameter: ${param}`);
-    //   }
-    // }
-
     const not_required_params = [
       "startDate",
       "imageUrl",
@@ -154,7 +146,7 @@ export default class AdminController {
       request.body.status = "ended";
     }
     const ret = await Mongo.save_auction(request.body);
-    response.send(ret);
+    return response.status(ret.status).json(ret.message);
   }
 
   static async update_auction(request, response) {
@@ -258,6 +250,7 @@ export default class AdminController {
         .status(404)
         .send("No auctions found for the given status");
     }
+    response.send({ message: "Success", item: auctions });
     // return response.send(auctions);
     // }else {
     // If no status is provided, fetch all auctions
@@ -267,12 +260,11 @@ export default class AdminController {
     //   return response.status(404).send("No auctions found");
     // }
     // }
-    response.send({ message: "Success", item: auctions });
   }
-  static config_auction(request, response) {
-    response.send("hello world");
-  }
-  static async list_users(request, response) {
-    response.send({ message: "list of users", list: await Mongo.users_list() });
-  }
+  // static config_auction(request, response) {
+  //   response.send("hello world");
+  // }
+  // static async list_users(request, response) {
+  //   response.send({ message: "list of users", list: await Mongo.users_list() });
+  // }
 }

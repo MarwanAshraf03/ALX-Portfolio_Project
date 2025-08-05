@@ -15,10 +15,9 @@ const users = new Schema({
   password: String,
   phoneNumber: String,
   role: { type: String, enum: ["admin", "user"], default: "user" },
-  profile: {
-    fullName: String,
-    avatarUrl: String,
-  },
+  firstName: String,
+  lastName: String,
+  avatarUrl: { type: String, default: "null" },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

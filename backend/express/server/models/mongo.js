@@ -70,7 +70,7 @@ export default class Mongo {
 
     if (existingAuction) {
       console.log("Auction already exists");
-      return { message: "Auction already exists" };
+      return { status: 400, message: { message: "Auction already exists" } };
     }
 
     const bid = new bids_model({
@@ -85,7 +85,10 @@ export default class Mongo {
     await newItem.save();
     await newItem_list.save();
     console.log("line 113");
-    return { message: "Item added successfully", item: newItem };
+    return {
+      status: 200,
+      message: { message: "Item added successfully", item: newItem },
+    };
   }
 
   static async update_auction(body) {
@@ -127,9 +130,9 @@ export default class Mongo {
     await redis_class.set_expiry(title + "@" + createdBy, endDate);
     return updatedItem;
   }
-  static async get_auction(auctionId) {
-    return await auctions_model.findById(auctionId).title;
-  }
+  // static async get_auction(auctionId) {
+  //   return await auctions_model.findById(auctionId).title;
+  // }
 
   static async get_auction(title, createdBy) {
     Mongo.connect();
@@ -161,10 +164,20 @@ export default class Mongo {
 
   static async save_user(body) {
     await Mongo.connect();
-    const { email, password, username, profile, phoneNumber, fullName } = body;
+    // const { email, password, username, profile, phoneNumber, fullName } = body;
+    const {
+      username,
+      email,
+      password,
+      phoneNumber,
+      // role,
+      firstName,
+      lastName,
+      // avatarUrl,
+    } = body;
     const existingUser = await users_model.findOne({ email });
     if (existingUser) {
-      return 400;
+      return { status: 400, message: "User already exists" };
     }
     const hashedPassword = bcrypt.hashSync(password, 10);
     const newUser = new users_model({
@@ -172,13 +185,16 @@ export default class Mongo {
       email: email,
       password: hashedPassword,
       phoneNumber: phoneNumber,
-      profile: {
-        fullName: fullName,
-        avatarUrl: "null",
-      },
+      // role: role,
+      firstName: firstName,
+      lastName: lastName,
+      // avatarUrl: avatarUrl,
     });
     await newUser.save();
-    return newUser;
+    return {
+      status: 200,
+      message: { message: "User added successfully", user: newUser },
+    };
   }
 
   // static async users_list() {

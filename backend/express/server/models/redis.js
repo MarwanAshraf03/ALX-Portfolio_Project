@@ -8,7 +8,7 @@ export default class redis_class {
     // url: "redis://redis:6379", // or use Docker IP if Redis runs in a container
   });
 
-  static async conn() {
+  static async #conn() {
     this.#client.on("error", (err) => {
       console.error("Redis error:", err);
     });
@@ -22,14 +22,14 @@ export default class redis_class {
   }
 
   static async create_session(sessionId, userId) {
-    await redis_class.conn();
+    await this.#conn();
     await this.#client.set(`session:${sessionId}`, userId, { EX: 3600 });
     await this.#client.disconnect();
     console.log("Redis Disconnected");
   }
 
   static async get_session(sessionId) {
-    await redis_class.conn();
+    await this.#conn();
     const session = await this.#client.get(`session:${sessionId}`);
     await this.#client.disconnect();
     console.log("Redis Disconnected");
@@ -37,7 +37,7 @@ export default class redis_class {
   }
 
   static async delete_session(sessionId) {
-    await redis_class.conn();
+    await this.#conn();
     const session = await this.#client.get(`session:${sessionId}`);
     if (!session) {
       console.error("Session not found");
@@ -51,7 +51,7 @@ export default class redis_class {
   }
 
   static async bid_on_auction(bid, endDate) {
-    await redis_class.conn();
+    await this.#conn();
     const auctionKey = bid.auctionId;
     await this.#client.LPUSH(auctionKey, JSON.stringify(bid));
 
@@ -62,9 +62,6 @@ export default class redis_class {
     } else {
       console.error("Invalid endDate: must be a future date.");
     }
-
-    // set Time To Live for the key, until the endDate
-    // await this.#client.EXPIRE(auctionKey, 3600); // 1 hour
 
     // if auction has 6 bids remove the previous 5 and place them into mongodb
     // await this.#client.LLEN(auctionKey, async (err, length) => {
@@ -88,7 +85,7 @@ export default class redis_class {
     console.log("Redis Disconnected");
   }
   static async set_expiry(auctionId, endDate) {
-    await redis_class.conn();
+    await this.#conn();
     const ttl = Math.floor((new Date(endDate).getTime() - Date.now()) / 1000);
     console.log("the time to live is: ", ttl, " seconds");
     if (ttl > 0) {
